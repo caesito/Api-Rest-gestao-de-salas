@@ -117,6 +117,7 @@ class ControllerSchedule:
         try:
             session=db_connect()
             query=session.query(Schedule).filter(Schedule.date==date_start.date()).all()
+        
             if len(query)==0:
                 query_classroom=session.query(Classroom).all()
                 list_open_classroom=list()
@@ -130,20 +131,33 @@ class ControllerSchedule:
                     list_open_classroom.append(dict_open_classroom)
                 return list_open_classroom
             else:
+                
                 list_open_classroom=list()
                 for classroom in query:
 
-                    if date_start.time() < classroom.time_end or date_end.time() > classroom.time_start:
-                        return False
+                    if date_start.time() < classroom.time_end and date_end.time() > classroom.time_start:
+                        query_open_class=session.query(Classroom).filter(Classroom.id!=classroom.id_classroom).all()
+                        for item in query_open_class:
+                            dict_open_classroom={
+                                'id':item.id,
+                                'name':item.name,
+                                'describe':item.describe,
+                                'available':True
+                            }
+                            list_open_classroom.append(dict_open_classroom)
+                        return list_open_classroom
                     else:
-                        query_open_class=session.query(Classroom).filter(Classroom.id==classroom.id_classroom)
-                        dict_open_classroom={
-                            'id':query_open_class.id,
-                            'name':query_open_class.name,
-                            'describe':query_open_class.describe,
-                            'available':True
-                        }
-                        list_open_classroom.append(dict_open_classroom)
+                        query_open_class=session.query(Classroom).filter(Classroom.id==classroom.id_classroom).all()
+                        
+                        for item in query_open_class:
+                            dict_open_classroom={
+                                'id':item.id,
+                                'name':item.name,
+                                'describe':item.describe,
+                                'available':True
+                            }
+                            list_open_classroom.append(dict_open_classroom)
+
                 return list_open_classroom
 
         except Exception as error:
