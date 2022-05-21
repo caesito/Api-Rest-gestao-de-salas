@@ -119,6 +119,7 @@ class ControllerSchedule:
             query=session.query(Schedule).filter(Schedule.date==date_start.date()).all()
         
             if len(query)==0:
+                
                 query_classroom=session.query(Classroom).all()
                 list_open_classroom=list()
                 for classroom in query_classroom:
@@ -147,7 +148,7 @@ class ControllerSchedule:
                             list_open_classroom.append(dict_open_classroom)
                         return list_open_classroom
                     else:
-                        query_open_class=session.query(Classroom).filter(Classroom.id==classroom.id_classroom).all()
+                        query_open_class=session.query(Classroom).all()
                         
                         for item in query_open_class:
                             dict_open_classroom={
@@ -158,7 +159,7 @@ class ControllerSchedule:
                             }
                             list_open_classroom.append(dict_open_classroom)
 
-                return list_open_classroom
+                        return list_open_classroom
 
         except Exception as error:
             return {'message error': error}
