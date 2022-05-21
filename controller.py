@@ -11,12 +11,12 @@ def db_connect():
 class ControllerClassroom:
 
     @classmethod
-    def add_classroom(cls,name: str):
+    def add_classroom(cls,name: str,describe:str):
         if cls.verify_exist_classroom(name):
             try:
                 session=db_connect()
-                session.add(Classroom(nome=name))
-                session.commit()
+                session.add(Classroom(name=name, describe=describe))
+                session.commit()  
                 return {'status code': 200, 'message': f'sala {name} adicionada com sucesso'}
             except Exception as error:
                 print('Ocorreu um erro: ', error)
@@ -36,7 +36,7 @@ class ControllerClassroom:
             return {'message error': error}
 
     @classmethod
-    def list_of_salas():
+    def list_of_classroom(cls):
         list_classroom=list()
         try:
             session=db_connect()
@@ -49,18 +49,19 @@ class ControllerClassroom:
                     'describe': classroom.describe
                 }
                 list_classroom.append(dict_classroom)
+                print(list_classroom)
             return list_classroom
 
         except Exception as error:
             return {'message error': error}
 
     @classmethod
-    def search_sala(csl, name: str):
+    def search_classroom(csl, name: str):
 
         try:
             list_classroom=list()
             session=db_connect()
-            query=session.query(Classroom).filter(Classroom.name==name)
+            query=session.query(Classroom).filter(Classroom.name==name).all()
 
             for classroom in query:
                 dict_classroom={
@@ -73,8 +74,7 @@ class ControllerClassroom:
 
         except Exception as error:
             return {'message error': error}
-
-
+    
 class ControllerSchedule:
 
     @classmethod
@@ -86,10 +86,12 @@ class ControllerSchedule:
                 id_classroom=query_classroom[0].id
                 session.add(Schedule(id_classroom=id_classroom,party=party,date=date_start.date(),time_start=date_start.time(),time_end=date_end.time()))
                 session.commit()
+                return {'status code': 200, 'message': f'data {date_start.date()} {date_start.time()} - {date_end.time()} ,  adicionada com sucesso'}
+            else:
+                return {'warning': f'data {date_start.date()} {date_start.time()} - {date_end.time()} , para a sala {name} não esta disponivel '}
 
         except Exception as error:
             return {'message error': error}
-
 
     @classmethod
     def verify_schedule_time(cls,name: str, date_start: datetime, date_end: datetime):
@@ -101,7 +103,6 @@ class ControllerSchedule:
             if len(query)==0:
                 return True
             else:
-                query=session.query(Schedule).filter(Schedule.date==date_start.date()).all()
                 for item in query:
                     if date_start.time() < item.time_end or date_end.time() > item.time_start:
                         return False
@@ -110,3 +111,41 @@ class ControllerSchedule:
 
         except Exception as error:
             return {'message error': error}
+
+    @classmethod
+    def search_open_Schedule(cls, date_start: datetime, date_end: datetime):
+        try:
+            session=db_connect()
+            query=session.query(Schedule).filter(Schedule.date==date_start.date()).all()
+            if len(query)==0:
+                query_classroom=session.query(Classroom).all()
+                list_open_classroom=list()
+                for classroom in query_classroom:
+                    dict_open_classroom={
+                        'id':classroom.id,
+                        'name':classroom.name,
+                        'describe':classroom.describe,
+                        'available':True
+                    }
+                    list_open_classroom.append(dict_open_classroom)
+                return list_open_classroom
+            else:
+                list_open_classroom=list()
+                for classroom in query:
+
+                    if date_start.time() < classroom.time_end or date_end.time() > classroom.time_start:
+                        return False
+                    else:
+                        query_open_class=session.query(Classroom).filter(Classroom.id==classroom.id_classroom)
+                        dict_open_classroom={
+                            'id':query_open_class.id,
+                            'name':query_open_class.name,
+                            'describe':query_open_class.describe,
+                            'available':True
+                        }
+                        list_open_classroom.append(dict_open_classroom)
+                return list_open_classroom
+
+        except Exception as error:
+            return {'message error': error}
+                    

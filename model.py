@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, create_engine, Column, Integer, String
+from sqlalchemy import ForeignKey, Time, create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.sqltypes import DateTime
@@ -29,8 +29,8 @@ class Schedule(Base):
     id_classroom=Column(Integer,ForeignKey('Classroom.id'))
     party=Column(String(50))
     date=Column(DateTime)
-    time_start=Column(DateTime)
-    time_end=Column(DateTime)
+    time_start=Column(Time)
+    time_end=Column(Time)
 
 
 Base.metadata.create_all(engine)
