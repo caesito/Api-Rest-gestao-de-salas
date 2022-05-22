@@ -21,7 +21,7 @@ class ControllerClassroom:
             except Exception as error:
                 print('Ocorreu um erro: ', error)
         else:
-            return {'warning': f'sala {name} ja existe, não foi possivel adicionar!'}
+            return False
 
     @classmethod       
     def verify_exist_classroom(cls,name: str):
@@ -88,7 +88,7 @@ class ControllerSchedule:
                 session.commit()
                 return {'status code': 200, 'message': f'data {date_start.date()} {date_start.time()} - {date_end.time()} ,  adicionada com sucesso'}
             else:
-                return {'warning': f'data {date_start.date()} {date_start.time()} - {date_end.time()} , para a sala {name} não esta disponivel '}
+                return False
 
         except Exception as error:
             return {'message error': error}
