@@ -17,6 +17,10 @@ app=FastAPI(
     description=description
 )
 
+@app.get('/')
+def root():
+    return {"message" :" Bem vindo a GestãodesalasApi, para consultar nossos andpoints/rotas acesse a url em:  /docs"}
+    
 @app.get('/lista', tags=['Listagem de salas cadastradas'])
 def lista():
     response=ControllerClassroom.list_of_classroom()
