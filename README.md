@@ -2,7 +2,7 @@
 
 
 ## Sobre o projeto:
-Teste realizado para o programa de Caça Talentos Desenvolvedor da 4linux.
+Teste realizado para o programa processo seletivo.
 
 ## Tecnologias utilizadas: 
 
