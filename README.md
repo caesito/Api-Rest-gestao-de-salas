@@ -1,4 +1,4 @@
-# Api-Rest-gestao-de-salas
+# Api-Rest-gestao-de-salas/V2
 
 
 ## Sobre o projeto:
